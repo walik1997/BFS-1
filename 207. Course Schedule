@@ -1,0 +1,36 @@
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        indegrees = [0] * numCourses
+        adj_list = defaultdict(list)
+        
+        for prerequisite in prerequisites:
+            in_course = prerequisite[0]
+            out_course = prerequisite[1]
+            indegrees[in_course] += 1
+            if out_course not in adj_list:
+                adj_list[out_course] = []
+            adj_list[out_course].append(in_course)
+        
+        q = deque()
+        count = 0
+        for i in range(numCourses):
+            if indegrees[i] == 0:
+                q.append(i)
+                count += 1
+        
+        if count == numCourses:
+            return True
+        
+        if count == 0:
+            return False
+        
+        while q:
+            parent = q.popleft()
+            children = adj_list.get(parent, [])
+            for child in children:
+                indegrees[child] -= 1
+                if indegrees[child] == 0:
+                    q.append(child)
+                    count += 1
+        
+        return count == numCourses
